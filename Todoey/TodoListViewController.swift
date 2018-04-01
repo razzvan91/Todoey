@@ -10,12 +10,18 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    let itemArray = ["Buy Milk", "Buy Bread", "Buy Meat"]
+    var itemArray = ["Buy Milk", "Buy Bread", "Buy Meat"]
     
+      let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+//        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
+        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
+            self.itemArray = items
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,5 +59,38 @@ class TodoListViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    //MARK: Add Button
+    @IBAction func addButton(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //What will happen once the user clicks the Add Item button on our UIAlert
+            
+//            print("Success")         FOR TESTING
+//            print(textField.text!)   FOR TESTING
+            
+            
+            self.itemArray.append(textField.text!)
+            
+            self.defaults.set(self.itemArray, forKey: "ToDoListArray")
+            
+            self.tableView.reloadData()
+        }
+        //adding a textfield to the alert
+        
+        alert.addTextField { (alertTextField) in //se cheama closure asta doar cand creaza textFieldul
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
 }
 
