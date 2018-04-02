@@ -10,24 +10,32 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var itemArray = ["Buy Milk", "Buy Bread", "Buy Meat"]
+    var itemArray = [Item]()
     
-      let defaults = UserDefaults.standard
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         
-//        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
-        if let items = defaults.array(forKey: "ToDoListArray") as? [String]{
-            self.itemArray = items
-        }
-    }
+        let newItem = Item()
+        newItem.title = "Buy Milk"
+        itemArray.append(newItem)
+        
+        let newItem2 = Item()
+        newItem2.title = "Buy Meat"
+        itemArray.append(newItem2)
+        
+        let newItem3 = Item()
+        newItem3.title = "Buy Bread"
+        itemArray.append(newItem3)
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    if let items = defaults.array(forKey: "ToDoListArray") as? String {
+        itemArray = items
+        }
+    
     }
+    
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.itemArray.count
     }
@@ -39,9 +47,13 @@ class TodoListViewController: UITableViewController {
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         //SAU
         
-//        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
+//        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")   ->>> Nu e ok pentru ca se face celula si cand iese de pe ecran se DISTRUGE
         
-        cell.textLabel?.text = self.itemArray[indexPath.row]
+        let item = self.itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
+        
         
         return cell
     }
@@ -49,13 +61,10 @@ class TodoListViewController: UITableViewController {
     //MARK - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print(self.itemArray[indexPath.row])
-
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        
+        
+       itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+         tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -72,8 +81,9 @@ class TodoListViewController: UITableViewController {
 //            print("Success")         FOR TESTING
 //            print(textField.text!)   FOR TESTING
             
-            
-            self.itemArray.append(textField.text!)
+            let newItem = Item()
+            newItem.title = textField.text!
+            self.itemArray.append(newItem)
             
             self.defaults.set(self.itemArray, forKey: "ToDoListArray")
             
